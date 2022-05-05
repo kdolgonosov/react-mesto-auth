@@ -27,31 +27,29 @@ function App() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [currentEmail, setCurrentEmail] = useState(null);
     const [mobileMenuActive, setMobileMenuActive] = useState(false);
-    let history = useHistory();
+    const history = useHistory();
     useEffect(() => {
         authApi.verifyToken().then((res) => {
-            handleLogin(res.data.email);
+            setLoggedIn(true);
+            setCurrentEmail(res.data.email);
+            history.push('/');
         });
     }, []);
     useEffect(() => {
-        api.getInitialCards()
-            .then((cards) => {
-                setCards(cards);
-            })
-            .catch((err) => console.log('Ошибка', err));
-    }, []);
-    useEffect(() => {
-        api.getProfile()
-            .then((profileInfo) => {
-                setCurrentUser({
-                    _id: profileInfo._id,
-                    name: profileInfo.name,
-                    about: profileInfo.about,
-                    avatar: profileInfo.avatar,
-                });
-            })
-            .catch((err) => console.log('Ошибка', err));
-    }, []);
+        if (loggedIn) {
+            Promise.all([api.getProfile(), api.getInitialCards()])
+                .then(([profileInfo, cards]) => {
+                    setCurrentUser({
+                        _id: profileInfo._id,
+                        name: profileInfo.name,
+                        about: profileInfo.about,
+                        avatar: profileInfo.avatar,
+                    });
+                    setCards(cards);
+                })
+                .catch((err) => console.log('Ошибка', err));
+        }
+    }, [loggedIn]);
 
     const handleCardLike = (card) => {
         const isLiked = card.likes.some((i) => i._id === currentUser._id);
@@ -109,12 +107,19 @@ function App() {
         setIsImagePopupOpen(false);
         setSelectedCard(null);
     };
-
-    const handleLogin = (email) => {
-        setLoggedIn(true);
-        setCurrentEmail(email);
-        history.push('/');
+    const handleLogin = (email, password) => {
+        authApi
+            .signIn(email, password)
+            .then((res) => {
+                if (res === undefined) {
+                    setLoggedIn(true);
+                    setCurrentEmail(email);
+                    history.push('/');
+                }
+            })
+            .catch((err) => console.log('Ошибка', err));
     };
+
     const handleRegister = () => {
         history.push('/sign-in');
     };

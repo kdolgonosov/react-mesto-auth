@@ -2,14 +2,13 @@ import Header from './Header';
 import FormWithTitle from './FormWithTitle';
 import InfoTooltip from './InfoTooltip';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-
-import authApi from '../utils/AuthApi';
+import { Link, useHistory } from 'react-router-dom';
 function Login({ handleLogin }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [resIsOk, setResIsOk] = useState(undefined);
     const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
+    const history = useHistory();
 
     function handleEmailChange(e) {
         setEmail(e.target.value);
@@ -19,14 +18,13 @@ function Login({ handleLogin }) {
     }
     function onLogin(e) {
         e.preventDefault();
-        authApi.signIn(email, password).then((res) => {
-            if (res === false) {
+        handleLogin(email, password);
+        setTimeout(() => {
+            if (history.location.pathname === '/sign-in') {
                 setResIsOk(false);
                 setIsInfoTooltipOpen(true);
-            } else {
-                handleLogin(email);
             }
-        });
+        }, 200);
     }
     function onCloseInfoTooltip() {
         setIsInfoTooltipOpen(false);

@@ -19,15 +19,18 @@ function Register({ handleRegister }) {
     }
     function onRegister(e) {
         e.preventDefault();
-        authApi.signUp(email, password).then((res) => {
-            if (res === false) {
-                setResIsOk(false);
-                setIsInfoTooltipOpen(true);
-            } else {
-                setResIsOk(true);
-                setIsInfoTooltipOpen(true);
-            }
-        });
+        authApi
+            .signUp(email, password)
+            .then((res) => {
+                if (res === false) {
+                    setResIsOk(false);
+                    setIsInfoTooltipOpen(true);
+                } else {
+                    setResIsOk(true);
+                    setIsInfoTooltipOpen(true);
+                }
+            })
+            .catch((err) => console.log('Ошибка', err));
     }
     function onCloseInfoTooltip() {
         setIsInfoTooltipOpen(false);

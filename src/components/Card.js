@@ -23,12 +23,19 @@ function Card({ card, onCardClick, onCardLike, onCardDelete }) {
     }`;
     return (
         <div className="elements__item">
-            <button
-                className={cardDeleteButtonClassName}
-                type="button"
-                onClick={handleDeleteClick}
-            ></button>
-            <img className="elements__picture" src={card.link} onClick={handleClick} />
+            {isOwn && (
+                <button
+                    className={cardDeleteButtonClassName}
+                    type="button"
+                    onClick={handleDeleteClick}
+                ></button>
+            )}
+            <img
+                className="elements__picture"
+                src={card.link}
+                onClick={handleClick}
+                alt={card.name}
+            />
             <div className="elements__footer">
                 <h4 className="elements__footer-caption">{card.name}</h4>
                 <div className="elements__footer-like-wrapper">
@@ -37,7 +44,7 @@ function Card({ card, onCardClick, onCardLike, onCardDelete }) {
                         type="button"
                         onClick={handleLikeClick}
                     ></button>
-                    <span className="elements__footer-like-counter"></span>
+                    <span className="elements__footer-like-counter">{card.likes.length}</span>
                 </div>
             </div>
         </div>
